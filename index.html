@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Form</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+        h2, h3 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="date"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+        button {
+            padding: 10px;
+            background-color: #5c6bc0;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3f51b5;
+        }
+        #taskDetails {
+            margin-top: 20px;
+            background-color: #f0f4f8;
+            padding: 15px;
+            border-radius: 5px;
+            color: #333;
+        }
+        #taskDetails ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #taskDetails li {
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            position: relative;
+        }
+        #taskDetails li p {
+            margin: 5px 0;
+        }
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 5px 10px;
+            background-color: #e53935;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .delete-btn:hover {
+            background-color: #c62828;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Add New Task</h2>
+        <form id="taskForm">
+            <label for="taskName">New Task:</label>
+            <input type="text" id="taskName" name="taskName" required>
+
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startDate" name="startDate" required>
+
+            <label for="targetDate">Target Date:</label>
+            <input type="date" id="targetDate" name="targetDate" required>
+
+            <button type="submit">Add Task</button>
+        </form>
+
+        <h3>Task Details</h3>
+        <div id="taskDetails">
+            <ul id="taskList">
+                <!-- Task akan ditambahkan di sini -->
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            $('#taskForm').on('submit', function(event) {
+                event.preventDefault();
+                
+                var taskName = $('#taskName').val();
+                var startDate = $('#startDate').val();
+                var targetDate = $('#targetDate').val();
+
+                // Menambahkan task ke dalam daftar
+                var taskItem = `
+                    <li>
+                        <p><strong>New Task:</strong> ${taskName}</p>
+                        <p><strong>Start Date:</strong> ${startDate}</p>
+                        <p><strong>Target Date:</strong> ${targetDate}</p>
+                        <button class="delete-btn">Delete</button>
+                    </li>
+                `;
+                $('#taskList').append(taskItem);
+
+                // Reset form
+                $('#taskForm')[0].reset();
+            });
+
+            // Event listener untuk tombol delete
+            $('#taskList').on('click', '.delete-btn', function() {
+                $(this).parent('li').remove(); // Menghapus task yang diklik
+            });
+        });
+    </script>
+</body>
+</html>
