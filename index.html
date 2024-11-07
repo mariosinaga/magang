@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Form</title>
+    <title>Form Tugas</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
+        /* Gaya dasar */
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f4f9;
@@ -76,49 +77,101 @@
         #taskDetails li p {
             margin: 5px 0;
         }
-        .delete-btn {
+        .delete-btn, .edit-btn {
             position: absolute;
             top: 10px;
-            right: 10px;
             padding: 5px 10px;
-            background-color: #e53935;
             color: #fff;
             border: none;
             border-radius: 3px;
             cursor: pointer;
             font-size: 12px;
         }
+        .delete-btn {
+            right: 10px;
+            background-color: #e53935;
+        }
         .delete-btn:hover {
             background-color: #c62828;
+        }
+        .edit-btn {
+            right: 80px;
+            background-color: #fdd835;
+        }
+        .edit-btn:hover {
+            background-color: #fbc02d;
+        }
+        /* Gaya untuk Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>Add New Task</h2>
+        <h2>Tambah Tugas Baru</h2>
         <form id="taskForm">
-            <label for="taskName">New Task:</label>
+            <label for="taskName">Tugas Baru:</label>
             <input type="text" id="taskName" name="taskName" required>
 
-            <label for="startDate">Start Date:</label>
+            <label for="startDate">Tanggal Mulai:</label>
             <input type="date" id="startDate" name="startDate" required>
 
-            <label for="targetDate">Target Date:</label>
+            <label for="targetDate">Tanggal Target:</label>
             <input type="date" id="targetDate" name="targetDate" required>
 
-            <button type="submit">Add Task</button>
+            <button type="submit">Tambah Tugas</button>
         </form>
 
-        <h3>Task Details</h3>
+        <h3>Detail Tugas</h3>
         <div id="taskDetails">
             <ul id="taskList">
-                <!-- Task akan ditambahkan di sini -->
+                <!-- Tugas akan ditambahkan di sini -->
             </ul>
+        </div>
+    </div>
+
+    <!-- Modal Edit -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <h3>Edit Tugas</h3>
+            <form id="editTaskForm">
+                <label for="editTaskName">Nama Tugas:</label>
+                <input type="text" id="editTaskName" required>
+
+                <label for="editStartDate">Tanggal Mulai:</label>
+                <input type="date" id="editStartDate" required>
+
+                <label for="editTargetDate">Tanggal Target:</label>
+                <input type="date" id="editTargetDate" required>
+
+                <button type="submit">Simpan Perubahan</button>
+            </form>
         </div>
     </div>
 
     <script>
         $(document).ready(function() {
+            var currentEditTask;
+
+            // Fungsi untuk menambahkan tugas baru
             $('#taskForm').on('submit', function(event) {
                 event.preventDefault();
                 
@@ -126,24 +179,58 @@
                 var startDate = $('#startDate').val();
                 var targetDate = $('#targetDate').val();
 
-                // Menambahkan task ke dalam daftar
                 var taskItem = `
                     <li>
-                        <p><strong>New Task:</strong> ${taskName}</p>
-                        <p><strong>Start Date:</strong> ${startDate}</p>
-                        <p><strong>Target Date:</strong> ${targetDate}</p>
-                        <button class="delete-btn">Delete</button>
+                        <p><strong>Tugas Baru:</strong> ${taskName}</p>
+                        <p><strong>Tanggal Mulai:</strong> ${startDate}</p>
+                        <p><strong>Tanggal Target:</strong> ${targetDate}</p>
+                        <button class="edit-btn">Edit</button>
+                        <button class="delete-btn">Hapus</button>
                     </li>
                 `;
                 $('#taskList').append(taskItem);
-
-                // Reset form
                 $('#taskForm')[0].reset();
             });
 
-            // Event listener untuk tombol delete
+            // Fungsi untuk menghapus tugas
             $('#taskList').on('click', '.delete-btn', function() {
-                $(this).parent('li').remove(); // Menghapus task yang diklik
+                $(this).parent('li').remove();
+            });
+
+            // Membuka modal untuk mengedit tugas
+            $('#taskList').on('click', '.edit-btn', function() {
+                currentEditTask = $(this).parent('li');
+                var taskName = currentEditTask.find('p:eq(0)').text().replace('Tugas Baru: ', '');
+                var startDate = currentEditTask.find('p:eq(1)').text().replace('Tanggal Mulai: ', '');
+                var targetDate = currentEditTask.find('p:eq(2)').text().replace('Tanggal Target: ', '');
+
+                $('#editTaskName').val(taskName);
+                $('#editStartDate').val(startDate);
+                $('#editTargetDate').val(targetDate);
+
+                $('#editModal').show();
+            });
+
+            // Menyimpan perubahan dari edit
+            $('#editTaskForm').on('submit', function(event) {
+                event.preventDefault();
+
+                var editedTaskName = $('#editTaskName').val();
+                var editedStartDate = $('#editStartDate').val();
+                var editedTargetDate = $('#editTargetDate').val();
+
+                currentEditTask.find('p:eq(0)').html(`<strong>Tugas Baru:</strong> ${editedTaskName}`);
+                currentEditTask.find('p:eq(1)').html(`<strong>Tanggal Mulai:</strong> ${editedStartDate}`);
+                currentEditTask.find('p:eq(2)').html(`<strong>Tanggal Target:</strong> ${editedTargetDate}`);
+
+                $('#editModal').hide();
+            });
+
+            // Menutup modal ketika area luar modal diklik
+            $(window).on('click', function(event) {
+                if ($(event.target).is('#editModal')) {
+                    $('#editModal').hide();
+                }
             });
         });
     </script>
